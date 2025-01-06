@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Helmet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        .stream-window {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease;
+        }
+        
+        .stream-window:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stream-feed {
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: #1a1a1a;
+        }
+        
+        .stream-feed img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .status-DANGER {
+            background-color: #FEE2E2;
+            color: #DC2626;
+        }
+        
+        .status-WARNING {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+        
+        .status-SAFE {
+            background-color: #D1FAE5;
+            color: #059669;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-3">
+                <span class="gradient-text">Smart Helmet</span>
+            </h1>
+            <p class="text-gray-600">Real-time Object Detection & Depth Estimation</p>
+        </header>
+
+        <!-- Proximity Status -->
+        <div class="mb-8 flex justify-center">
+            <div id="proximity-status" class="status-SAFE text-lg font-semibold px-6 py-2 rounded-full shadow-sm">
+                SAFE
+            </div>
+        </div>
+
+        <!-- Stream Container -->
+        <div class="grid md:grid-cols-2 gap-8 mx-auto">
+            <!-- YOLO Stream -->
+            <div class="stream-window p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                    <h2 class="text-xl font-semibold text-gray-800">Object Detection</h2>
+                </div>
+                <div class="stream-feed">
+                    <img src="/yolo_feed" alt="YOLO Stream" class="w-full">
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    YOLOv8 Real-time Detection
+                </div>
+            </div>
+
+            <!-- Depth Stream -->
+            <div class="stream-window p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
+                    <h2 class="text-xl font-semibold text-gray-800">Depth Estimation</h2>
+                </div>
+                <div class="stream-feed">
+                    <img src="/depth_feed" alt="Depth Stream" class="w-full">
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    Depth-Anything Model Analysis
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>Powered by YOLOv8 & Depth-Anything Models</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateProximityStatus() {
+            fetch('/proximity_status')
+                .then(response => response.text())
+                .then(status => {
+                    const statusDiv = document.getElementById('proximity-status');
+                    statusDiv.textContent = status;
+                    statusDiv.className = `status-${status} text-lg font-semibold px-6 py-2 rounded-full shadow-sm`;
+                });
+        }
+
+        // Update status every second
+        setInterval(updateProximityStatus, 1000);
+    </script>
+</body>
+</html>
